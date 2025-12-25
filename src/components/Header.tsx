@@ -24,9 +24,11 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center shadow-glow">
-              <span className="text-primary-foreground font-display font-bold text-lg">S</span>
-            </div>
+            <img
+              src="/Logo.png"
+              alt="Sabor Fome"
+              className="w-10 h-10 object-contain"
+            />
             <span className="font-display font-bold text-xl text-foreground hidden sm:block">
               Sabor Fome
             </span>
