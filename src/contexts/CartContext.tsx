@@ -24,6 +24,9 @@ interface CartState {
   paymentMethod: string;
   observations: string;
   address: string;
+  needsChange: boolean;
+  changeFor: string;
+  cardType: string;
 }
 
 type CartAction =
@@ -35,6 +38,9 @@ type CartAction =
   | { type: 'SET_PAYMENT_METHOD'; method: string }
   | { type: 'SET_OBSERVATIONS'; observations: string }
   | { type: 'SET_ADDRESS'; address: string }
+  | { type: 'SET_NEEDS_CHANGE'; needsChange: boolean }
+  | { type: 'SET_CHANGE_FOR'; changeFor: string }
+  | { type: 'SET_CARD_TYPE'; cardType: string }
   | { type: 'LOAD_CART'; state: CartState };
 
 const initialState: CartState = {
@@ -43,6 +49,9 @@ const initialState: CartState = {
   paymentMethod: 'Pix',
   observations: '',
   address: '',
+  needsChange: false,
+  changeFor: '',
+  cardType: '',
 };
 
 function cartReducer(state: CartState, action: CartAction): CartState {
@@ -94,6 +103,12 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return { ...state, observations: action.observations };
     case 'SET_ADDRESS':
       return { ...state, address: action.address };
+    case 'SET_NEEDS_CHANGE':
+      return { ...state, needsChange: action.needsChange };
+    case 'SET_CHANGE_FOR':
+      return { ...state, changeFor: action.changeFor };
+    case 'SET_CARD_TYPE':
+      return { ...state, cardType: action.cardType };
     case 'LOAD_CART':
       return action.state;
     default:
@@ -111,6 +126,9 @@ interface CartContextType {
   setPaymentMethod: (method: string) => void;
   setObservations: (observations: string) => void;
   setAddress: (address: string) => void;
+  setNeedsChange: (needsChange: boolean) => void;
+  setChangeFor: (changeFor: string) => void;
+  setCardType: (cardType: string) => void;
   totalItems: number;
   subtotal: number;
   total: number;
@@ -173,6 +191,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_ADDRESS', address });
   };
 
+  const setNeedsChange = (needsChange: boolean) => {
+    dispatch({ type: 'SET_NEEDS_CHANGE', needsChange });
+  };
+
+  const setChangeFor = (changeFor: string) => {
+    dispatch({ type: 'SET_CHANGE_FOR', changeFor });
+  };
+
+  const setCardType = (cardType: string) => {
+    dispatch({ type: 'SET_CARD_TYPE', cardType });
+  };
+
   const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const total = subtotal; // Could add delivery fee here
@@ -189,6 +219,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setPaymentMethod,
         setObservations,
         setAddress,
+        setNeedsChange,
+        setChangeFor,
+        setCardType,
         totalItems,
         subtotal,
         total,

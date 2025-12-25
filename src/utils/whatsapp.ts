@@ -22,7 +22,10 @@ export function buildWhatsAppMessage(
   customerName: string,
   paymentMethod: string,
   observations: string,
-  address: string
+  address: string,
+  needsChange: boolean = false,
+  changeFor: string = '',
+  cardType: string = ''
 ): string {
   const orderId = generateOrderId();
   
@@ -44,13 +47,25 @@ export function buildWhatsAppMessage(
   if (customerName) {
     message += `👤 *Nome:* ${customerName}\n`;
   }
-  
-  message += `💳 *Pagamento:* ${paymentMethod}\n`;
-  
+
+  message += `💳 *Pagamento:* ${paymentMethod}`;
+
+  // Add card type if payment is card
+  if (paymentMethod === 'Cartão' && cardType) {
+    message += ` (${cardType})`;
+  }
+
+  message += `\n`;
+
+  // Add change information if payment is cash and needs change
+  if (paymentMethod === 'Dinheiro' && needsChange && changeFor) {
+    message += `💵 *Troco para:* ${changeFor}\n`;
+  }
+
   if (address) {
     message += `📍 *Endereço:* ${address}\n`;
   }
-  
+
   if (observations) {
     message += `📝 *Obs:* ${observations}\n`;
   }
@@ -66,9 +81,12 @@ export function openWhatsApp(
   customerName: string,
   paymentMethod: string,
   observations: string,
-  address: string
+  address: string,
+  needsChange: boolean = false,
+  changeFor: string = '',
+  cardType: string = ''
 ): void {
-  const message = buildWhatsAppMessage(items, total, customerName, paymentMethod, observations, address);
+  const message = buildWhatsAppMessage(items, total, customerName, paymentMethod, observations, address, needsChange, changeFor, cardType);
   const encodedMessage = encodeURIComponent(message);
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
   window.open(url, '_blank');

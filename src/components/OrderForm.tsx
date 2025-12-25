@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
-import { CreditCard, Banknote, Smartphone, MapPin, User, MessageSquare, Search, Loader2, Check } from 'lucide-react';
+import { MapPin, User, MessageSquare, Search, Loader2, Check, Wallet } from 'lucide-react';
+import { FaPix, FaMoneyBillWave, FaCreditCard } from 'react-icons/fa6';
 import { cn } from '@/lib/utils';
 import { fetchAddressByCep, formatCep, formatFullAddress } from '@/utils/cep';
 import { toast } from 'sonner';
 
 const paymentMethods = [
-  { id: 'Pix', label: 'Pix', icon: Smartphone },
-  { id: 'Dinheiro', label: 'Dinheiro', icon: Banknote },
-  { id: 'Cartão', label: 'Cartão', icon: CreditCard },
+  { id: 'Pix', label: 'Pix', icon: FaPix },
+  { id: 'Dinheiro', label: 'Dinheiro', icon: FaMoneyBillWave },
+  { id: 'Cartão', label: 'Cartão', icon: FaCreditCard },
 ];
 
 export function OrderForm() {
-  const { state, setCustomerName, setPaymentMethod, setObservations, setAddress } = useCart();
+  const { state, setCustomerName, setPaymentMethod, setObservations, setAddress, setNeedsChange, setChangeFor, setCardType } = useCart();
   const [cep, setCep] = useState('');
   const [numero, setNumero] = useState('');
   const [complemento, setComplemento] = useState('');
@@ -84,7 +85,7 @@ export function OrderForm() {
       {/* Payment Method */}
       <div>
         <label className="block text-sm font-medium text-foreground mb-2">
-          <CreditCard className="w-4 h-4 inline mr-2" />
+          <Wallet className="w-4 h-4 inline mr-2" />
           Forma de pagamento
         </label>
         <div className="flex gap-2">
@@ -108,6 +109,95 @@ export function OrderForm() {
           })}
         </div>
       </div>
+
+      {/* Change Section - Only show when Dinheiro is selected */}
+      {state.paymentMethod === 'Dinheiro' && (
+        <div className="space-y-3 animate-fade-in">
+          <label className="block text-sm font-medium text-foreground">
+            Precisa de troco?
+          </label>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setNeedsChange(false);
+                setChangeFor('');
+              }}
+              className={cn(
+                'flex-1 px-4 py-3 rounded-lg font-medium transition-all',
+                !state.needsChange
+                  ? 'gradient-primary text-primary-foreground shadow-glow'
+                  : 'bg-secondary text-secondary-foreground hover:bg-muted'
+              )}
+            >
+              Não
+            </button>
+            <button
+              onClick={() => setNeedsChange(true)}
+              className={cn(
+                'flex-1 px-4 py-3 rounded-lg font-medium transition-all',
+                state.needsChange
+                  ? 'gradient-primary text-primary-foreground shadow-glow'
+                  : 'bg-secondary text-secondary-foreground hover:bg-muted'
+              )}
+            >
+              Sim
+            </button>
+          </div>
+
+          {/* Change For Amount - Only show when needsChange is true */}
+          {state.needsChange && (
+            <div className="animate-fade-in">
+              <label className="block text-xs text-muted-foreground mb-1">
+                Troco para quanto?
+              </label>
+              <input
+                type="text"
+                value={state.changeFor}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '');
+                  const formatted = value ? `R$ ${(Number(value) / 100).toFixed(2)}` : '';
+                  setChangeFor(formatted);
+                }}
+                placeholder="R$ 0,00"
+                className="w-full px-4 py-3 bg-secondary rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Card Type Section - Only show when Cartão is selected */}
+      {state.paymentMethod === 'Cartão' && (
+        <div className="space-y-3 animate-fade-in">
+          <label className="block text-sm font-medium text-foreground">
+            Tipo de cartão
+          </label>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCardType('Débito')}
+              className={cn(
+                'flex-1 px-4 py-3 rounded-lg font-medium transition-all',
+                state.cardType === 'Débito'
+                  ? 'gradient-primary text-primary-foreground shadow-glow'
+                  : 'bg-secondary text-secondary-foreground hover:bg-muted'
+              )}
+            >
+              Débito
+            </button>
+            <button
+              onClick={() => setCardType('Crédito')}
+              className={cn(
+                'flex-1 px-4 py-3 rounded-lg font-medium transition-all',
+                state.cardType === 'Crédito'
+                  ? 'gradient-primary text-primary-foreground shadow-glow'
+                  : 'bg-secondary text-secondary-foreground hover:bg-muted'
+              )}
+            >
+              Crédito
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* CEP Field */}
       <div>

@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 const Cart = () => {
   const { state, total, clearCart } = useCart();
-  const { items, customerName, paymentMethod, observations, address } = state;
+  const { items, customerName, paymentMethod, observations, address, needsChange, changeFor, cardType } = state;
 
   const handleFinalize = () => {
     if (!customerName.trim()) {
@@ -23,7 +23,7 @@ const Cart = () => {
       return;
     }
 
-    openWhatsApp(items, total, customerName, paymentMethod, observations, address);
+    openWhatsApp(items, total, customerName, paymentMethod, observations, address, needsChange, changeFor, cardType);
     clearCart();
     toast.success('Pedido enviado!', {
       description: 'Obrigada pela preferência!',
