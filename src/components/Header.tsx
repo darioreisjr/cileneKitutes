@@ -25,10 +25,10 @@ export function Header({ onSearch }: HeaderProps) {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center shadow-glow">
-              <span className="text-primary-foreground font-display font-bold text-lg">C</span>
+              <span className="text-primary-foreground font-display font-bold text-lg">S</span>
             </div>
             <span className="font-display font-bold text-xl text-foreground hidden sm:block">
-              Cilene Doces
+              Sabor Fome
             </span>
           </Link>
 

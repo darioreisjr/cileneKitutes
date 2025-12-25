@@ -118,7 +118,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | null>(null);
 
-const STORAGE_KEY = 'cilene-doces-cart';
+const STORAGE_KEY = 'sabor-fome-cart';
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);

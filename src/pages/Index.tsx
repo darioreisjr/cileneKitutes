@@ -30,7 +30,7 @@ const Index = () => {
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/20 via-card to-accent/10 border border-border/50 p-6 md:p-8">
               <div className="relative z-10">
                 <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
-                  Bem-vindo à <span className="text-gradient">Cilene Doces</span>
+                  Bem-vindo à <span className="text-gradient">Sabor Fome</span>
                 </h1>
                 <p className="text-muted-foreground text-lg max-w-md">
                   Delícias caseiras feitas com amor. Escolha seus favoritos e peça agora!

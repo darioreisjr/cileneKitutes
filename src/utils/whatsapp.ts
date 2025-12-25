@@ -1,6 +1,6 @@
 import { CartItem } from '@/contexts/CartContext';
 
-const WHATSAPP_NUMBER = '5511954351239';
+const WHATSAPP_NUMBER = '5511999588073';
 
 export function formatCurrency(value: number): string {
   return value.toLocaleString('pt-BR', {
@@ -26,7 +26,7 @@ export function buildWhatsAppMessage(
 ): string {
   const orderId = generateOrderId();
   
-  let message = `🍫 *CILENE DOCES*\n`;
+  let message = `🍫 *SABOR FOME*\n`;
   message += `━━━━━━━━━━━━━━━━━\n`;
   message += `📋 *Pedido:* ${orderId}\n\n`;
   message += `*Itens do Pedido:*\n`;

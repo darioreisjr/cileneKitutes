@@ -8,23 +8,23 @@ export function Footer() {
           {/* Brand */}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-sm">C</span>
+              <span className="text-primary-foreground font-display font-bold text-sm">S</span>
             </div>
             <span className="font-display font-bold text-foreground">
-              Cilene Doces
+              Sabor Fome
             </span>
           </div>
 
           {/* Contact */}
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <a 
-              href="https://wa.me/5511954351239" 
-              target="_blank" 
+            <a
+              href="https://wa.me/5511999588073"
+              target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 hover:text-primary transition-colors"
             >
               <Phone className="w-4 h-4" />
-              (11) 95435-1239
+              (11) 99958-8073
             </a>
             <a 
               href="#" 

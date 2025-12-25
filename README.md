@@ -1,8 +1,8 @@
-# Cilene Doces
+# Sabor Fome
 
 ## Sobre o Projeto
 
-Site de e-commerce para doceteria e restaurante Cilene Doces.
+Site de e-commerce para doceteria e restaurante Sabor Fome.
 
 ## Como Editar o Código
 
