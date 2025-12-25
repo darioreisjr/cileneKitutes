@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag, MessageCircle } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { CartItemRow } from '@/components/CartItemRow';
 import { OrderForm } from '@/components/OrderForm';
+import { OrderConfirmationModal } from '@/components/OrderConfirmationModal';
 import { Footer } from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { formatCurrency, openWhatsApp } from '@/utils/whatsapp';
@@ -10,11 +12,27 @@ import { toast } from 'sonner';
 
 const Cart = () => {
   const { state, total, clearCart } = useCart();
-  const { items, customerName, paymentMethod, observations, address, needsChange, changeFor, cardType } = state;
+  const { items, customerName, paymentMethod, observations, address, needsChange, changeFor, cardType, residenceType, apartmentNumber, streetNumber } = state;
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const handleFinalize = () => {
     if (!customerName.trim()) {
       toast.error('Por favor, informe seu nome');
+      return;
+    }
+
+    if (!address.trim()) {
+      toast.error('Por favor, informe seu endereço completo');
+      return;
+    }
+
+    if (!streetNumber.trim()) {
+      toast.error('Por favor, informe o número da residência');
+      return;
+    }
+
+    if (residenceType === 'Apartamento' && !apartmentNumber.trim()) {
+      toast.error('Por favor, informe o número do apartamento');
       return;
     }
 
@@ -23,7 +41,13 @@ const Cart = () => {
       return;
     }
 
+    // Show confirmation modal instead of sending directly
+    setShowConfirmationModal(true);
+  };
+
+  const handleConfirmOrder = () => {
     openWhatsApp(items, total, customerName, paymentMethod, observations, address, needsChange, changeFor, cardType);
+    setShowConfirmationModal(false);
     clearCart();
     toast.success('Pedido enviado!', {
       description: 'Obrigada pela preferência!',
@@ -128,6 +152,22 @@ const Cart = () => {
       </main>
 
       <Footer />
+
+      {/* Order Confirmation Modal */}
+      <OrderConfirmationModal
+        isOpen={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+        onConfirm={handleConfirmOrder}
+        items={items}
+        total={total}
+        customerName={customerName}
+        paymentMethod={paymentMethod}
+        address={address}
+        observations={observations}
+        needsChange={needsChange}
+        changeFor={changeFor}
+        cardType={cardType}
+      />
     </div>
   );
 };

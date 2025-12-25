@@ -27,6 +27,9 @@ interface CartState {
   needsChange: boolean;
   changeFor: string;
   cardType: string;
+  residenceType: string;
+  apartmentNumber: string;
+  streetNumber: string;
 }
 
 type CartAction =
@@ -41,6 +44,9 @@ type CartAction =
   | { type: 'SET_NEEDS_CHANGE'; needsChange: boolean }
   | { type: 'SET_CHANGE_FOR'; changeFor: string }
   | { type: 'SET_CARD_TYPE'; cardType: string }
+  | { type: 'SET_RESIDENCE_TYPE'; residenceType: string }
+  | { type: 'SET_APARTMENT_NUMBER'; apartmentNumber: string }
+  | { type: 'SET_STREET_NUMBER'; streetNumber: string }
   | { type: 'LOAD_CART'; state: CartState };
 
 const initialState: CartState = {
@@ -52,6 +58,9 @@ const initialState: CartState = {
   needsChange: false,
   changeFor: '',
   cardType: '',
+  residenceType: 'Casa',
+  apartmentNumber: '',
+  streetNumber: '',
 };
 
 function cartReducer(state: CartState, action: CartAction): CartState {
@@ -109,6 +118,12 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return { ...state, changeFor: action.changeFor };
     case 'SET_CARD_TYPE':
       return { ...state, cardType: action.cardType };
+    case 'SET_RESIDENCE_TYPE':
+      return { ...state, residenceType: action.residenceType };
+    case 'SET_APARTMENT_NUMBER':
+      return { ...state, apartmentNumber: action.apartmentNumber };
+    case 'SET_STREET_NUMBER':
+      return { ...state, streetNumber: action.streetNumber };
     case 'LOAD_CART':
       return action.state;
     default:
@@ -129,6 +144,9 @@ interface CartContextType {
   setNeedsChange: (needsChange: boolean) => void;
   setChangeFor: (changeFor: string) => void;
   setCardType: (cardType: string) => void;
+  setResidenceType: (residenceType: string) => void;
+  setApartmentNumber: (apartmentNumber: string) => void;
+  setStreetNumber: (streetNumber: string) => void;
   totalItems: number;
   subtotal: number;
   total: number;
@@ -203,6 +221,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_CARD_TYPE', cardType });
   };
 
+  const setResidenceType = (residenceType: string) => {
+    dispatch({ type: 'SET_RESIDENCE_TYPE', residenceType });
+  };
+
+  const setApartmentNumber = (apartmentNumber: string) => {
+    dispatch({ type: 'SET_APARTMENT_NUMBER', apartmentNumber });
+  };
+
+  const setStreetNumber = (streetNumber: string) => {
+    dispatch({ type: 'SET_STREET_NUMBER', streetNumber });
+  };
+
   const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const total = subtotal; // Could add delivery fee here
@@ -222,6 +252,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setNeedsChange,
         setChangeFor,
         setCardType,
+        setResidenceType,
+        setApartmentNumber,
+        setStreetNumber,
         totalItems,
         subtotal,
         total,
