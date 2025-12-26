@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Search } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { CategoryChips } from '@/components/CategoryChips';
 import { ProductCard } from '@/components/ProductCard';
@@ -21,7 +22,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header onSearch={setSearchQuery} />
+      <Header />
       
       <main className="flex-1 pt-20 pb-8">
         <div className="container mx-auto px-4">
@@ -42,9 +43,41 @@ const Index = () => {
             </div>
           </section>
 
-          {/* Categories */}
+          {/* Mobile/Tablet Search Bar */}
+          <section className="mb-4 lg:hidden animate-slide-up">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Buscar produtos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-secondary rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              />
+            </div>
+          </section>
+
+          {/* Categories and Desktop Search */}
           <section className="mb-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <CategoryChips selected={selectedCategory} onSelect={setSelectedCategory} />
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+              <div className="flex-1">
+                <CategoryChips selected={selectedCategory} onSelect={setSelectedCategory} />
+              </div>
+
+              {/* Desktop Search Bar */}
+              <div className="hidden lg:block lg:w-80">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Buscar produtos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-secondary rounded-full text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
           </section>
 
           {/* Products Grid */}
