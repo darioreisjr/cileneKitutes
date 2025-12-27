@@ -1,6 +1,6 @@
 import { CartItem } from '@/contexts/CartContext';
 
-const WHATSAPP_NUMBER = '5511999588073';
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER;
 
 export function formatCurrency(value: number): string {
   return value.toLocaleString('pt-BR', {
