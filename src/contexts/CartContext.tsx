@@ -166,8 +166,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const parsed = JSON.parse(savedCart);
         dispatch({ type: 'LOAD_CART', state: parsed });
-      } catch (e) {
-        console.error('Failed to load cart from localStorage');
+      } catch {
+        // Silently fail if cart data is corrupted
       }
     }
   }, []);
