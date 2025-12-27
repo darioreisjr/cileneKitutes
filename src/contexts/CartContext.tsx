@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useMemo, useCallback, ReactNode } from 'react';
 
 export interface Product {
   id: string;
@@ -177,89 +177,119 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
-  const addItem = (product: Product, quantity: number) => {
+  const addItem = useCallback((product: Product, quantity: number) => {
     dispatch({ type: 'ADD_ITEM', product, quantity });
-  };
+  }, []);
 
-  const removeItem = (productId: string) => {
+  const removeItem = useCallback((productId: string) => {
     dispatch({ type: 'REMOVE_ITEM', productId });
-  };
+  }, []);
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = useCallback((productId: string, quantity: number) => {
     dispatch({ type: 'UPDATE_QUANTITY', productId, quantity });
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     dispatch({ type: 'CLEAR_CART' });
-  };
+  }, []);
 
-  const setCustomerName = (name: string) => {
+  const setCustomerName = useCallback((name: string) => {
     dispatch({ type: 'SET_CUSTOMER_NAME', name });
-  };
+  }, []);
 
-  const setPaymentMethod = (method: string) => {
+  const setPaymentMethod = useCallback((method: string) => {
     dispatch({ type: 'SET_PAYMENT_METHOD', method });
-  };
+  }, []);
 
-  const setObservations = (observations: string) => {
+  const setObservations = useCallback((observations: string) => {
     dispatch({ type: 'SET_OBSERVATIONS', observations });
-  };
+  }, []);
 
-  const setAddress = (address: string) => {
+  const setAddress = useCallback((address: string) => {
     dispatch({ type: 'SET_ADDRESS', address });
-  };
+  }, []);
 
-  const setNeedsChange = (needsChange: boolean) => {
+  const setNeedsChange = useCallback((needsChange: boolean) => {
     dispatch({ type: 'SET_NEEDS_CHANGE', needsChange });
-  };
+  }, []);
 
-  const setChangeFor = (changeFor: string) => {
+  const setChangeFor = useCallback((changeFor: string) => {
     dispatch({ type: 'SET_CHANGE_FOR', changeFor });
-  };
+  }, []);
 
-  const setCardType = (cardType: string) => {
+  const setCardType = useCallback((cardType: string) => {
     dispatch({ type: 'SET_CARD_TYPE', cardType });
-  };
+  }, []);
 
-  const setResidenceType = (residenceType: string) => {
+  const setResidenceType = useCallback((residenceType: string) => {
     dispatch({ type: 'SET_RESIDENCE_TYPE', residenceType });
-  };
+  }, []);
 
-  const setApartmentNumber = (apartmentNumber: string) => {
+  const setApartmentNumber = useCallback((apartmentNumber: string) => {
     dispatch({ type: 'SET_APARTMENT_NUMBER', apartmentNumber });
-  };
+  }, []);
 
-  const setStreetNumber = (streetNumber: string) => {
+  const setStreetNumber = useCallback((streetNumber: string) => {
     dispatch({ type: 'SET_STREET_NUMBER', streetNumber });
-  };
+  }, []);
 
-  const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const total = subtotal; // Could add delivery fee here
+  const totalItems = useMemo(
+    () => state.items.reduce((sum, item) => sum + item.quantity, 0),
+    [state.items]
+  );
+
+  const subtotal = useMemo(
+    () => state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+    [state.items]
+  );
+
+  const total = useMemo(() => subtotal, [subtotal]); // Could add delivery fee here
+
+  const contextValue = useMemo(
+    () => ({
+      state,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      setCustomerName,
+      setPaymentMethod,
+      setObservations,
+      setAddress,
+      setNeedsChange,
+      setChangeFor,
+      setCardType,
+      setResidenceType,
+      setApartmentNumber,
+      setStreetNumber,
+      totalItems,
+      subtotal,
+      total,
+    }),
+    [
+      state,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      setCustomerName,
+      setPaymentMethod,
+      setObservations,
+      setAddress,
+      setNeedsChange,
+      setChangeFor,
+      setCardType,
+      setResidenceType,
+      setApartmentNumber,
+      setStreetNumber,
+      totalItems,
+      subtotal,
+      total,
+    ]
+  );
 
   return (
-    <CartContext.Provider
-      value={{
-        state,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-        setCustomerName,
-        setPaymentMethod,
-        setObservations,
-        setAddress,
-        setNeedsChange,
-        setChangeFor,
-        setCardType,
-        setResidenceType,
-        setApartmentNumber,
-        setStreetNumber,
-        totalItems,
-        subtotal,
-        total,
-      }}
-    >
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   );

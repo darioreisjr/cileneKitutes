@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Star, Sparkles, Percent } from 'lucide-react';
 import { Product } from '@/contexts/CartContext';
@@ -28,7 +29,7 @@ const tagConfig: Record<string, { icon: React.ReactNode; label: string; classNam
   },
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -102,4 +103,4 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
     </Link>
   );
-}
+});

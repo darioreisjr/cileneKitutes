@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { Phone, Instagram } from 'lucide-react';
 
-export function Footer() {
+export const Footer = memo(function Footer() {
   return (
     <footer className="bg-card border-t border-border mt-auto">
       <div className="container mx-auto px-4 py-8">
@@ -45,4 +46,4 @@ export function Footer() {
       </div>
     </footer>
   );
-}
+});

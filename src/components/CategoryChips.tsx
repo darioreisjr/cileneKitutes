@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -24,7 +24,7 @@ interface CategoryChipsProps {
   onSelect: (category: string) => void;
 }
 
-export function CategoryChips({ selected, onSelect }: CategoryChipsProps) {
+export const CategoryChips = memo(function CategoryChips({ selected, onSelect }: CategoryChipsProps) {
   const [open, setOpen] = useState(false);
 
   const selectedCategory = categories.find(cat => cat.id === selected);
@@ -99,4 +99,4 @@ export function CategoryChips({ selected, onSelect }: CategoryChipsProps) {
       </div>
     </>
   );
-}
+});

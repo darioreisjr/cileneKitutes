@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { CartItem } from '@/contexts/CartContext';
 import { useCart } from '@/contexts/CartContext';
@@ -7,7 +8,7 @@ interface CartItemRowProps {
   item: CartItem;
 }
 
-export function CartItemRow({ item }: CartItemRowProps) {
+export const CartItemRow = memo(function CartItemRow({ item }: CartItemRowProps) {
   const { updateQuantity, removeItem } = useCart();
   const { product, quantity } = item;
   const itemTotal = product.price * quantity;
@@ -71,4 +72,4 @@ export function CartItemRow({ item }: CartItemRowProps) {
       </div>
     </div>
   );
-}
+});
