@@ -19,24 +19,26 @@ export const Footer = memo(function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <nav className="flex items-center gap-6 text-sm text-muted-foreground" aria-label="Contatos e redes sociais">
             <a
               href="https://wa.me/5511999588073"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 hover:text-primary transition-colors"
+              aria-label="WhatsApp (11) 99958-8073"
             >
-              <Phone className="w-4 h-4" />
+              <Phone className="w-4 h-4" aria-hidden="true" />
               (11) 99958-8073
             </a>
             <a
               href="#"
               className="flex items-center gap-2 hover:text-primary transition-colors"
+              aria-label="Instagram @saborfome"
             >
-              <Instagram className="w-4 h-4" />
+              <Instagram className="w-4 h-4" aria-hidden="true" />
               @saborfome
             </a>
-          </div>
+          </nav>
 
           {/* Copyright */}
           <p className="flex items-center gap-1 text-sm text-muted-foreground">

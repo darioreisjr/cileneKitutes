@@ -57,31 +57,34 @@ const Cart = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      
+
       <main className="flex-1 pt-16">
         {/* Back Button */}
         <div className="container mx-auto px-4 py-4">
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Voltar para continuar comprando"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             Continuar comprando
           </Link>
         </div>
 
-        <section className="container mx-auto px-4 pb-8">
+        <section className="container mx-auto px-4 pb-8" aria-label="Carrinho de compras">
           <h1 className="font-display text-3xl font-bold text-foreground mb-6 flex items-center gap-3">
-            <ShoppingBag className="w-8 h-8 text-primary" />
+            <ShoppingBag className="w-8 h-8 text-primary" aria-hidden="true" />
             Seu Carrinho
           </h1>
 
           {items.length > 0 ? (
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Cart Items */}
-              <div className="lg:col-span-2 space-y-4">
+              <div className="lg:col-span-2 space-y-4" role="list" aria-label="Itens no carrinho">
                 {items.map((item) => (
-                  <CartItemRow key={item.product.id} item={item} />
+                  <div key={item.product.id} role="listitem">
+                    <CartItemRow item={item} />
+                  </div>
                 ))}
               </div>
 
@@ -117,9 +120,10 @@ const Cart = () => {
                   <button
                     onClick={handleFinalize}
                     disabled={items.length === 0}
+                    aria-label="Finalizar pedido e enviar pelo WhatsApp"
                     className="w-full mt-6 flex items-center justify-center gap-3 px-6 py-4 gradient-primary text-primary-foreground rounded-lg font-bold text-lg shadow-glow hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <MessageCircle className="w-5 h-5" />
+                    <MessageCircle className="w-5 h-5" aria-hidden="true" />
                     Finalizar no WhatsApp
                   </button>
 
@@ -130,9 +134,9 @@ const Cart = () => {
               </div>
             </div>
           ) : (
-            <div className="text-center py-16 animate-fade-in">
+            <div className="text-center py-16 animate-fade-in" role="status" aria-live="polite">
               <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-secondary flex items-center justify-center">
-                <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+                <ShoppingBag className="w-12 h-12 text-muted-foreground" aria-hidden="true" />
               </div>
               <h2 className="text-2xl font-display font-bold text-foreground mb-2">
                 Carrinho vazio
@@ -143,6 +147,7 @@ const Cart = () => {
               <Link
                 to="/"
                 className="inline-flex items-center gap-2 px-6 py-3 gradient-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity"
+                aria-label="Ver catálogo de produtos"
               >
                 Ver catálogo
               </Link>

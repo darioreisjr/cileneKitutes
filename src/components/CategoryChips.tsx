@@ -40,13 +40,13 @@ export const CategoryChips = memo(function CategoryChips({ selected, onSelect }:
       <div className="lg:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <button className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-secondary hover:bg-muted transition-colors">
+            <button className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-secondary hover:bg-muted transition-colors" aria-label={`Filtrar por categoria. Categoria selecionada: ${selectedCategory?.label}`}>
               <div className="flex items-center gap-2">
-                <Filter className="w-5 h-5 text-foreground" />
+                <Filter className="w-5 h-5 text-foreground" aria-hidden="true" />
                 <span className="font-medium text-foreground">Filtrar por categoria</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10">
-                <span className="text-lg">{selectedCategory?.emoji}</span>
+                <span className="text-lg" aria-hidden="true">{selectedCategory?.emoji}</span>
                 <span className="text-sm font-medium text-foreground">{selectedCategory?.label}</span>
               </div>
             </button>
@@ -58,11 +58,14 @@ export const CategoryChips = memo(function CategoryChips({ selected, onSelect }:
                 Escolha a categoria de produtos que deseja visualizar
               </SheetDescription>
             </SheetHeader>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Categorias de produtos">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleSelect(category.id)}
+                  role="radio"
+                  aria-checked={selected === category.id}
+                  aria-label={category.label}
                   className={cn(
                     'flex flex-col items-center gap-3 p-6 rounded-xl transition-all duration-300 font-medium border-2',
                     selected === category.id
@@ -70,7 +73,7 @@ export const CategoryChips = memo(function CategoryChips({ selected, onSelect }:
                       : 'bg-secondary text-secondary-foreground hover:bg-muted border-transparent'
                   )}
                 >
-                  <span className="text-4xl">{category.emoji}</span>
+                  <span className="text-4xl" aria-hidden="true">{category.emoji}</span>
                   <span className="text-base">{category.label}</span>
                 </button>
               ))}
@@ -80,11 +83,14 @@ export const CategoryChips = memo(function CategoryChips({ selected, onSelect }:
       </div>
 
       {/* Desktop: Chips horizontais como antes */}
-      <div className="hidden lg:flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="hidden lg:flex gap-2 overflow-x-auto pb-2 scrollbar-hide" role="radiogroup" aria-label="Categorias de produtos">
         {categories.map((category) => (
           <button
             key={category.id}
             onClick={() => onSelect(category.id)}
+            role="radio"
+            aria-checked={selected === category.id}
+            aria-label={category.label}
             className={cn(
               'flex items-center gap-2 px-4 py-2.5 rounded-full whitespace-nowrap transition-all duration-300 font-medium text-sm',
               selected === category.id
@@ -92,7 +98,7 @@ export const CategoryChips = memo(function CategoryChips({ selected, onSelect }:
                 : 'bg-secondary text-secondary-foreground hover:bg-muted'
             )}
           >
-            <span>{category.emoji}</span>
+            <span aria-hidden="true">{category.emoji}</span>
             <span>{category.label}</span>
           </button>
         ))}

@@ -77,6 +77,7 @@ export const ProductCard = memo(function ProductCard({ product }: ProductCardPro
           {/* Quick Add Button */}
           <button
             onClick={handleQuickAdd}
+            aria-label={`Adicionar ${product.name} ao carrinho`}
             className="absolute bottom-2 right-2 w-10 h-10 gradient-primary rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 active:scale-95"
           >
             <Plus className="w-5 h-5 text-primary-foreground" />

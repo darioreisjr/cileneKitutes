@@ -23,11 +23,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      
+
       <main className="flex-1 pt-20 pb-8">
         <div className="container mx-auto px-4">
           {/* Hero Section */}
-          <section className="mb-8 animate-fade-in">
+          <section className="mb-8 animate-fade-in" aria-label="Apresentação">
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/20 via-card to-accent/10 border border-border/50 p-6 md:p-8">
               <div className="relative z-10">
                 <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
@@ -38,27 +38,28 @@ const Index = () => {
                 </p>
               </div>
               {/* Decorative elements */}
-              <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-primary/10 blur-3xl" />
-              <div className="absolute -right-5 -bottom-10 w-32 h-32 rounded-full bg-accent/20 blur-2xl" />
+              <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
+              <div className="absolute -right-5 -bottom-10 w-32 h-32 rounded-full bg-accent/20 blur-2xl" aria-hidden="true" />
             </div>
           </section>
 
           {/* Mobile/Tablet Search Bar */}
-          <section className="mb-4 lg:hidden animate-slide-up">
+          <section className="mb-4 lg:hidden animate-slide-up" aria-label="Busca de produtos">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
               <input
-                type="text"
+                type="search"
                 placeholder="Buscar produtos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Buscar produtos"
                 className="w-full pl-11 pr-4 py-3 bg-secondary rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               />
             </div>
           </section>
 
           {/* Categories and Desktop Search */}
-          <section className="mb-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <section className="mb-6 animate-slide-up" style={{ animationDelay: '0.1s' }} aria-label="Filtros de categoria e busca">
             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
               <div className="flex-1">
                 <CategoryChips selected={selectedCategory} onSelect={setSelectedCategory} />
@@ -67,12 +68,13 @@ const Index = () => {
               {/* Desktop Search Bar */}
               <div className="hidden lg:block lg:w-80">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
                   <input
-                    type="text"
+                    type="search"
                     placeholder="Buscar produtos..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label="Buscar produtos"
                     className="w-full pl-10 pr-4 py-2.5 bg-secondary rounded-full text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                   />
                 </div>
@@ -81,14 +83,15 @@ const Index = () => {
           </section>
 
           {/* Products Grid */}
-          <section>
+          <section aria-label="Lista de produtos">
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" role="list">
                 {filteredProducts.map((product, index) => (
-                  <div 
-                    key={product.id} 
+                  <div
+                    key={product.id}
                     className="animate-slide-up"
                     style={{ animationDelay: `${0.05 * index}s` }}
+                    role="listitem"
                   >
                     <ProductCard product={product} />
                   </div>
@@ -105,6 +108,7 @@ const Index = () => {
                     setSearchQuery('');
                   }}
                   className="mt-4 px-6 py-2 gradient-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity"
+                  aria-label="Limpar filtros e ver todos os produtos"
                 >
                   Ver todos os produtos
                 </button>

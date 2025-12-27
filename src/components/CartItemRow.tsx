@@ -37,35 +37,38 @@ export const CartItemRow = memo(function CartItemRow({ item }: CartItemRowProps)
           </div>
           <button
             onClick={() => removeItem(product.id)}
+            aria-label={`Remover ${product.name} do carrinho`}
             className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
         {/* Quantity & Total */}
         <div className="flex items-center justify-between mt-3">
           {/* Quantity Controls */}
-          <div className="flex items-center gap-1 bg-secondary rounded-full p-1">
+          <div className="flex items-center gap-1 bg-secondary rounded-full p-1" role="group" aria-label={`Quantidade de ${product.name}`}>
             <button
               onClick={() => updateQuantity(product.id, quantity - 1)}
+              aria-label={`Diminuir quantidade de ${product.name}`}
               className="w-8 h-8 rounded-full flex items-center justify-center text-foreground hover:bg-muted transition-colors"
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-4 h-4" aria-hidden="true" />
             </button>
-            <span className="w-8 text-center font-semibold text-foreground">
+            <span className="w-8 text-center font-semibold text-foreground" aria-live="polite" aria-atomic="true">
               {quantity}
             </span>
             <button
               onClick={() => updateQuantity(product.id, quantity + 1)}
+              aria-label={`Aumentar quantidade de ${product.name}`}
               className="w-8 h-8 rounded-full flex items-center justify-center text-foreground hover:bg-muted transition-colors"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4" aria-hidden="true" />
             </button>
           </div>
 
           {/* Item Total */}
-          <span className="text-success font-bold text-lg">
+          <span className="text-success font-bold text-lg" aria-label={`Total: ${formatCurrency(itemTotal)}`}>
             {formatCurrency(itemTotal)}
           </span>
         </div>
