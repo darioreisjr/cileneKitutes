@@ -46,8 +46,16 @@ export function AddressFields({
           value={streetNumber}
           onChange={(e) => onStreetNumberChange(e.target.value)}
           placeholder="123"
-          className="w-full px-4 py-2.5 bg-secondary rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+          className={cn(
+            "w-full px-4 py-2.5 bg-secondary rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 transition-all text-sm",
+            streetNumber.length > 0
+              ? "focus:ring-green-500/50 border border-green-500/30"
+              : "focus:ring-primary/50"
+          )}
         />
+        {streetNumber.length === 0 && (
+          <p className="text-xs text-muted-foreground mt-1">Campo obrigatório</p>
+        )}
       </div>
 
       {/* Residence Type */}
@@ -91,8 +99,16 @@ export function AddressFields({
             value={apartmentNumber}
             onChange={(e) => onApartmentNumberChange(e.target.value)}
             placeholder="101, 202, etc."
-            className="w-full px-4 py-2.5 bg-secondary rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+            className={cn(
+              "w-full px-4 py-2.5 bg-secondary rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 transition-all text-sm",
+              apartmentNumber.length > 0
+                ? "focus:ring-green-500/50 border border-green-500/30"
+                : "focus:ring-primary/50"
+            )}
           />
+          {apartmentNumber.length === 0 && (
+            <p className="text-xs text-muted-foreground mt-1">Campo obrigatório</p>
+          )}
         </div>
       )}
 

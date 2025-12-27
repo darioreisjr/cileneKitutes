@@ -135,20 +135,21 @@ const Cart = () => {
             </div>
           ) : (
             <div className="text-center py-16 animate-fade-in" role="status" aria-live="polite">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-secondary flex items-center justify-center">
-                <ShoppingBag className="w-12 h-12 text-muted-foreground" aria-hidden="true" />
+              <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                <ShoppingBag className="w-16 h-16 text-muted-foreground" aria-hidden="true" />
               </div>
               <h2 className="text-2xl font-display font-bold text-foreground mb-2">
-                Carrinho vazio
+                Seu carrinho está vazio
               </h2>
-              <p className="text-muted-foreground mb-6">
-                Adicione produtos deliciosos ao seu carrinho!
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                Que tal adicionar alguns produtos deliciosos? Temos doces, bolos, tortas e muito mais esperando por você!
               </p>
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 px-6 py-3 gradient-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity"
+                className="inline-flex items-center gap-2 px-6 py-3 gradient-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity shadow-glow"
                 aria-label="Ver catálogo de produtos"
               >
+                <ShoppingBag className="w-5 h-5" />
                 Ver catálogo
               </Link>
             </div>

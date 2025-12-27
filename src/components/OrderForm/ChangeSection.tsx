@@ -60,8 +60,16 @@ export function ChangeSection({
               onChangeForUpdate(formatted);
             }}
             placeholder="R$ 0,00"
-            className="w-full px-4 py-3 bg-secondary rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+            className={cn(
+              "w-full px-4 py-3 bg-secondary rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 transition-all",
+              changeFor.length > 0
+                ? "focus:ring-green-500/50 border border-green-500/30"
+                : "focus:ring-primary/50"
+            )}
           />
+          {changeFor.length === 0 && (
+            <p className="text-xs text-muted-foreground mt-1">Campo obrigatório</p>
+          )}
         </div>
       )}
     </div>

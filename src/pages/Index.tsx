@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { CategoryChips } from '@/components/CategoryChips';
 import { ProductCard } from '@/components/ProductCard';
+import { ProductCardSkeleton } from '@/components/ProductCardSkeleton';
 import { Footer } from '@/components/Footer';
 import products from '@/data/products.json';
 import { Product } from '@/contexts/CartContext';
@@ -10,6 +11,12 @@ import { Product } from '@/contexts/CartContext';
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('todos');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredProducts = useMemo(() => {
     return (products as Product[]).filter((product) => {
@@ -84,7 +91,13 @@ const Index = () => {
 
           {/* Products Grid */}
           <section aria-label="Lista de produtos">
-            {filteredProducts.length > 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" role="list">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <ProductCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" role="list">
                 {filteredProducts.map((product, index) => (
                   <div
@@ -98,16 +111,22 @@ const Index = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
-                <p className="text-xl text-muted-foreground">
+              <div className="text-center py-16 animate-fade-in">
+                <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                  <Search className="w-16 h-16 text-muted-foreground" aria-hidden="true" />
+                </div>
+                <h2 className="text-2xl font-display font-bold text-foreground mb-2">
                   Nenhum produto encontrado
+                </h2>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Não encontramos produtos que correspondam à sua busca. Tente ajustar os filtros ou ver todos os produtos.
                 </p>
                 <button
                   onClick={() => {
                     setSelectedCategory('todos');
                     setSearchQuery('');
                   }}
-                  className="mt-4 px-6 py-2 gradient-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity"
+                  className="px-6 py-3 gradient-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity shadow-glow"
                   aria-label="Limpar filtros e ver todos os produtos"
                 >
                   Ver todos os produtos
