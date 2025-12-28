@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useCart } from '@/contexts/CartContext';
+import { useOrderStore } from '@/stores';
 import { fetchAddressByCep, formatCep } from '@/utils/cep';
 import { toast } from 'sonner';
 import { CustomerNameInput } from './CustomerNameInput';
@@ -28,19 +28,27 @@ interface SavedData {
 }
 
 export function OrderForm() {
-  const {
-    state,
-    setCustomerName,
-    setPaymentMethod,
-    setObservations,
-    setAddress,
-    setNeedsChange,
-    setChangeFor,
-    setCardType,
-    setResidenceType,
-    setApartmentNumber,
-    setStreetNumber,
-  } = useCart();
+  const customerName = useOrderStore((state) => state.customerName);
+  const paymentMethod = useOrderStore((state) => state.paymentMethod);
+  const observations = useOrderStore((state) => state.observations);
+  const address = useOrderStore((state) => state.address);
+  const needsChange = useOrderStore((state) => state.needsChange);
+  const changeFor = useOrderStore((state) => state.changeFor);
+  const cardType = useOrderStore((state) => state.cardType);
+  const residenceType = useOrderStore((state) => state.residenceType);
+  const apartmentNumber = useOrderStore((state) => state.apartmentNumber);
+  const streetNumber = useOrderStore((state) => state.streetNumber);
+
+  const setCustomerName = useOrderStore((state) => state.setCustomerName);
+  const setPaymentMethod = useOrderStore((state) => state.setPaymentMethod);
+  const setObservations = useOrderStore((state) => state.setObservations);
+  const setAddress = useOrderStore((state) => state.setAddress);
+  const setNeedsChange = useOrderStore((state) => state.setNeedsChange);
+  const setChangeFor = useOrderStore((state) => state.setChangeFor);
+  const setCardType = useOrderStore((state) => state.setCardType);
+  const setResidenceType = useOrderStore((state) => state.setResidenceType);
+  const setApartmentNumber = useOrderStore((state) => state.setApartmentNumber);
+  const setStreetNumber = useOrderStore((state) => state.setStreetNumber);
 
   const loadSavedAddressData = (): SavedData | null => {
     try {
@@ -75,28 +83,28 @@ export function OrderForm() {
   useEffect(() => {
     const dataToSave = {
       cep,
-      numero: state.streetNumber,
+      numero: streetNumber,
       addressData,
-      residenceType: state.residenceType,
-      apartmentNumber: state.apartmentNumber,
+      residenceType: residenceType,
+      apartmentNumber: apartmentNumber,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-  }, [cep, state.streetNumber, addressData, state.residenceType, state.apartmentNumber]);
+  }, [cep, streetNumber, addressData, residenceType, apartmentNumber]);
 
   useEffect(() => {
     if (addressData) {
       const parts = [
         addressData.logradouro,
-        state.streetNumber ? `nº ${state.streetNumber}` : '',
-        state.residenceType === 'Apartamento' && state.apartmentNumber
-          ? `Apto ${state.apartmentNumber}`
+        streetNumber ? `nº ${streetNumber}` : '',
+        residenceType === 'Apartamento' && apartmentNumber
+          ? `Apto ${apartmentNumber}`
           : '',
         addressData.bairro,
         addressData.cidade,
       ].filter(Boolean);
       setAddress(parts.join(', '));
     }
-  }, [addressData, state.streetNumber, state.residenceType, state.apartmentNumber, setAddress]);
+  }, [addressData, streetNumber, residenceType, apartmentNumber, setAddress]);
 
   const handleCepChange = async (value: string) => {
     const formatted = formatCep(value);
@@ -126,21 +134,21 @@ export function OrderForm() {
 
   return (
     <div className="space-y-4">
-      <CustomerNameInput value={state.customerName} onChange={setCustomerName} />
+      <CustomerNameInput value={customerName} onChange={setCustomerName} />
 
-      <PaymentMethodSelector value={state.paymentMethod} onChange={setPaymentMethod} />
+      <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
 
-      {state.paymentMethod === 'Dinheiro' && (
+      {paymentMethod === 'Dinheiro' && (
         <ChangeSection
-          needsChange={state.needsChange}
-          changeFor={state.changeFor}
+          needsChange={needsChange}
+          changeFor={changeFor}
           onNeedsChangeToggle={setNeedsChange}
           onChangeForUpdate={setChangeFor}
         />
       )}
 
-      {state.paymentMethod === 'Cartão' && (
-        <CardTypeSelector value={state.cardType} onChange={setCardType} />
+      {paymentMethod === 'Cartão' && (
+        <CardTypeSelector value={cardType} onChange={setCardType} />
       )}
 
       <CepInput
@@ -153,18 +161,18 @@ export function OrderForm() {
       {addressData && (
         <AddressFields
           addressData={addressData}
-          streetNumber={state.streetNumber}
-          residenceType={state.residenceType}
-          apartmentNumber={state.apartmentNumber}
+          streetNumber={streetNumber}
+          residenceType={residenceType}
+          apartmentNumber={apartmentNumber}
           onStreetNumberChange={setStreetNumber}
           onResidenceTypeChange={setResidenceType}
           onApartmentNumberChange={setApartmentNumber}
         />
       )}
 
-      {!addressData && <ManualAddressInput value={state.address} onChange={setAddress} />}
+      {!addressData && <ManualAddressInput value={address} onChange={setAddress} />}
 
-      <ObservationsInput value={state.observations} onChange={setObservations} />
+      <ObservationsInput value={observations} onChange={setObservations} />
     </div>
   );
 }

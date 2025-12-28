@@ -1,8 +1,8 @@
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Star, Sparkles, Percent } from 'lucide-react';
-import { Product } from '@/contexts/CartContext';
-import { useCart } from '@/contexts/CartContext';
+import { Product } from '@/types';
+import { useCartStore } from '@/stores';
 import { formatCurrency } from '@/utils/whatsapp';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -30,7 +30,7 @@ const tagConfig: Record<string, { icon: React.ReactNode; label: string; classNam
 };
 
 export const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart();
+  const addItem = useCartStore((state) => state.addItem);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();

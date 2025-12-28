@@ -6,13 +6,25 @@ import { CartItemRow } from '@/components/CartItemRow';
 import { OrderForm } from '@/components/OrderForm';
 import { OrderConfirmationModal } from '@/components/OrderConfirmationModal';
 import { Footer } from '@/components/Footer';
-import { useCart } from '@/contexts/CartContext';
+import { useCartStore, useOrderStore } from '@/stores';
 import { formatCurrency, openWhatsApp } from '@/utils/whatsapp';
 import { toast } from 'sonner';
 
 const Cart = () => {
-  const { state, total, clearCart } = useCart();
-  const { items, customerName, paymentMethod, observations, address, needsChange, changeFor, cardType, residenceType, apartmentNumber, streetNumber } = state;
+  const items = useCartStore((state) => state.items);
+  const total = useCartStore((state) => state.total());
+  const clearCart = useCartStore((state) => state.clearCart);
+
+  const customerName = useOrderStore((state) => state.customerName);
+  const paymentMethod = useOrderStore((state) => state.paymentMethod);
+  const observations = useOrderStore((state) => state.observations);
+  const address = useOrderStore((state) => state.address);
+  const needsChange = useOrderStore((state) => state.needsChange);
+  const changeFor = useOrderStore((state) => state.changeFor);
+  const cardType = useOrderStore((state) => state.cardType);
+  const residenceType = useOrderStore((state) => state.residenceType);
+  const apartmentNumber = useOrderStore((state) => state.apartmentNumber);
+  const streetNumber = useOrderStore((state) => state.streetNumber);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const handleFinalize = () => {

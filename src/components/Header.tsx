@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
+import { useCartStore } from '@/stores';
 
 export function Header() {
-  const { totalItems } = useCart();
+  const totalItems = useCartStore((state) => state.totalItems());
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">

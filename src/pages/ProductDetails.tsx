@@ -4,14 +4,15 @@ import { ArrowLeft, Minus, Plus, ShoppingBag, Star } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { ProductCard } from '@/components/ProductCard';
 import { Footer } from '@/components/Footer';
-import { useCart, Product } from '@/contexts/CartContext';
+import { useCartStore } from '@/stores';
+import { Product } from '@/types';
 import { formatCurrency } from '@/utils/whatsapp';
 import products from '@/data/products.json';
 import { toast } from 'sonner';
 
 const ProductDetails = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { addItem } = useCart();
+  const addItem = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
 
   const product = useMemo(() => {
