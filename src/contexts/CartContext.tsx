@@ -1,22 +1,6 @@
-import React, { createContext, useContext, useReducer, useEffect, useMemo, useCallback, ReactNode } from 'react';
-
-export interface Product {
-  id: string;
-  slug: string;
-  name: string;
-  category: string;
-  price: number;
-  unit: string;
-  image: string;
-  description: string;
-  tags: string[];
-  available: boolean;
-}
-
-export interface CartItem {
-  product: Product;
-  quantity: number;
-}
+import { createContext, useContext, useReducer, useEffect, useMemo, useCallback, ReactNode } from 'react';
+import { Product, CartItem } from '@/types';
+import { APP_CONFIG } from '@/config';
 
 interface CartState {
   items: CartItem[];
@@ -154,7 +138,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | null>(null);
 
-const STORAGE_KEY = 'sabor-fome-cart';
+const STORAGE_KEY = APP_CONFIG.STORAGE_KEYS.CART;
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
@@ -302,3 +286,6 @@ export function useCart() {
   }
   return context;
 }
+
+// Re-export types for backward compatibility
+export type { Product, CartItem };
