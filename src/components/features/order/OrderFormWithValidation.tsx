@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { Form } from '@/components/ui/form';
 import { useState } from 'react';
 
-// Importar componentes RHF (React Hook Form)
+// Importar componentes existentes (adaptados para React Hook Form)
 import { CustomerNameInputRHF } from './rhf/CustomerNameInputRHF';
 import { PaymentMethodSelectorRHF } from './rhf/PaymentMethodSelectorRHF';
 import { ChangeSectionRHF } from './rhf/ChangeSectionRHF';
@@ -34,7 +34,7 @@ interface SavedData {
   apartmentNumber?: string;
 }
 
-export function OrderForm() {
+export function OrderFormWithValidation() {
   // Estado local para dados de endereço
   const [cep, setCep] = useState('');
   const [isLoadingCep, setIsLoadingCep] = useState(false);
