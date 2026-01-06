@@ -1,137 +1,146 @@
-import { useState, useEffect } from 'react';
-import { Product, ProductCategory } from '@/types';
-import { ProductService } from '@/api/services';
+import { useQuery } from '@tanstack/react-query';
+import { ProductService } from '@/api/services/product.service';
+import type { Product, ProductCategory } from '@/types';
 
-interface UseProductsReturn {
-  products: Product[];
-  loading: boolean;
-  error: Error | null;
+/**
+ * Hook para buscar todos os produtos
+ */
+export function useProducts() {
+  const query = useQuery<Product[], Error>({
+    queryKey: ['products'],
+    queryFn: () => ProductService.getAll(),
+    staleTime: 1000 * 60 * 5, // 5 minutos
+    gcTime: 1000 * 60 * 10, // 10 minutos
+  });
+
+  return {
+    products: query.data || [],
+    loading: query.isLoading,
+    error: query.error,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
 }
-
-/**
- * Hook para gerenciar produtos
- */
-export const useProducts = (): UseProductsReturn => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const data = await ProductService.getAll();
-
-        if (isMounted) {
-          setProducts(data);
-          setError(null);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err instanceof Error ? err : new Error('Erro ao carregar produtos'));
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchProducts();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return { products, loading, error };
-};
-
-/**
- * Hook para filtrar produtos
- */
-export const useProductFilter = (category: ProductCategory, searchQuery: string) => {
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const filterProducts = async () => {
-      try {
-        setLoading(true);
-        const data = await ProductService.filter(category, searchQuery);
-
-        if (isMounted) {
-          setFilteredProducts(data);
-          setError(null);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err instanceof Error ? err : new Error('Erro ao filtrar produtos'));
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    filterProducts();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [category, searchQuery]);
-
-  return { products: filteredProducts, loading, error };
-};
 
 /**
  * Hook para buscar produto por slug
  */
-export const useProduct = (slug: string | undefined) => {
-  const [product, setProduct] = useState<Product | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+export function useProduct(slug: string | undefined) {
+  const query = useQuery<Product | undefined, Error>({
+    queryKey: ['product', slug],
+    queryFn: () => ProductService.getBySlug(slug!),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+  });
 
-  useEffect(() => {
-    if (!slug) {
-      setLoading(false);
-      return;
-    }
+  return {
+    product: query.data,
+    loading: query.isLoading,
+    error: query.error,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
+}
 
-    let isMounted = true;
+/**
+ * Hook para filtrar produtos
+ */
+export function useProductFilter(category: ProductCategory, searchQuery: string) {
+  const query = useQuery<Product[], Error>({
+    queryKey: ['products', 'filter', category, searchQuery],
+    queryFn: () => ProductService.filter(category, searchQuery),
+    staleTime: 1000 * 60 * 2, // 2 minutos para filtros
+    gcTime: 1000 * 60 * 5,
+  });
 
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const data = await ProductService.getBySlug(slug);
+  return {
+    products: query.data || [],
+    loading: query.isLoading,
+    error: query.error,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
+}
 
-        if (isMounted) {
-          setProduct(data);
-          setError(null);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err instanceof Error ? err : new Error('Erro ao carregar produto'));
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+/**
+ * Hook para buscar produto por ID
+ */
+export function useProductById(id: string) {
+  const query = useQuery<Product | undefined, Error>({
+    queryKey: ['product', id],
+    queryFn: () => ProductService.getById(id),
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+  });
 
-    fetchProduct();
+  return {
+    product: query.data,
+    loading: query.isLoading,
+    error: query.error,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
+}
 
-    return () => {
-      isMounted = false;
-    };
-  }, [slug]);
+/**
+ * Hook para buscar produtos por categoria
+ */
+export function useProductsByCategory(category: ProductCategory) {
+  const query = useQuery<Product[], Error>({
+    queryKey: ['products', 'category', category],
+    queryFn: () => ProductService.getByCategory(category),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+  });
 
-  return { product, loading, error };
-};
+  return {
+    products: query.data || [],
+    loading: query.isLoading,
+    error: query.error,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
+}
+
+/**
+ * Hook para buscar produtos relacionados
+ */
+export function useRelatedProducts(productId: string, limit: number = 4) {
+  const query = useQuery<Product[], Error>({
+    queryKey: ['products', 'related', productId, limit],
+    queryFn: () => ProductService.getRelated(productId, limit),
+    enabled: !!productId,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+  });
+
+  return {
+    products: query.data || [],
+    loading: query.isLoading,
+    error: query.error,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
+}
+
+/**
+ * Hook para buscar categorias
+ */
+export function useCategories() {
+  const query = useQuery<string[], Error>({
+    queryKey: ['categories'],
+    queryFn: () => ProductService.getCategories(),
+    staleTime: 1000 * 60 * 30, // 30 minutos
+    gcTime: 1000 * 60 * 60, // 1 hora
+  });
+
+  return {
+    categories: query.data || [],
+    loading: query.isLoading,
+    error: query.error,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
+}

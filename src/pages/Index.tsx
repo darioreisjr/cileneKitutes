@@ -1,31 +1,22 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { CategoryChips } from '@/components/CategoryChips';
 import { ProductCard } from '@/components/ProductCard';
 import { ProductCardSkeleton } from '@/components/ProductCardSkeleton';
 import { Footer } from '@/components/Footer';
-import products from '@/data/products.json';
-import { Product } from '@/contexts/CartContext';
+import { useProductFilter } from '@/hooks/useProducts';
+import type { ProductCategory } from '@/types';
 
 const Index = () => {
-  const [selectedCategory, setSelectedCategory] = useState('todos');
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategory>('todos');
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
+  const { products: filteredProducts, loading: isLoading } = useProductFilter(selectedCategory, searchQuery);
 
-  const filteredProducts = useMemo(() => {
-    return (products as Product[]).filter((product) => {
-      const matchesCategory = selectedCategory === 'todos' || product.category === selectedCategory;
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          product.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch && product.available;
-    });
-  }, [selectedCategory, searchQuery]);
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category as ProductCategory);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -69,7 +60,7 @@ const Index = () => {
           <section className="mb-6 animate-slide-up" style={{ animationDelay: '0.1s' }} aria-label="Filtros de categoria e busca">
             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
               <div className="flex-1">
-                <CategoryChips selected={selectedCategory} onSelect={setSelectedCategory} />
+                <CategoryChips selected={selectedCategory} onSelect={handleCategoryChange} />
               </div>
 
               {/* Desktop Search Bar */}

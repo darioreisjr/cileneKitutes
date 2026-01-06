@@ -1,13 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, ShoppingBag, Star } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { ProductCard } from '@/components/ProductCard';
 import { Footer } from '@/components/Footer';
 import { useCartStore } from '@/stores';
-import { Product } from '@/types';
 import { formatCurrency } from '@/utils/whatsapp';
-import products from '@/data/products.json';
+import { useProduct, useRelatedProducts } from '@/hooks/useProducts';
 import { toast } from 'sonner';
 
 const ProductDetails = () => {
@@ -15,16 +14,23 @@ const ProductDetails = () => {
   const addItem = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
 
-  const product = useMemo(() => {
-    return (products as Product[]).find((p) => p.slug === slug);
-  }, [slug]);
+  const { product, loading: loadingProduct } = useProduct(slug);
+  const { products: relatedProducts } = useRelatedProducts(
+    product?.id || '',
+    4
+  );
 
-  const relatedProducts = useMemo(() => {
-    if (!product) return [];
-    return (products as Product[])
-      .filter((p) => p.category === product.category && p.id !== product.id && p.available)
-      .slice(0, 4);
-  }, [product]);
+  if (loadingProduct) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-1 pt-20 flex items-center justify-center">
+          <div className="animate-pulse text-primary text-lg">Carregando produto...</div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (

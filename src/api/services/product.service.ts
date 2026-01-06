@@ -1,5 +1,47 @@
 import { Product, ProductCategory } from '@/types';
-import productsData from '@/data/products.json';
+import { supabase } from '@/lib/supabase';
+import { adaptSupabaseProducts, adaptSupabaseProduct, type ProductWithTags } from '@/lib/product-adapter';
+
+/**
+ * Helper para buscar tags de produtos
+ */
+async function fetchProductTags(productIds: string[]): Promise<Map<string, string[]>> {
+  if (productIds.length === 0) return new Map();
+
+  const { data, error } = await supabase
+    .from('product_tags')
+    .select('product_id, tag_slug')
+    .in('product_id', productIds);
+
+  if (error) {
+    console.error('Error fetching product tags:', error);
+    return new Map();
+  }
+
+  const tagsMap = new Map<string, string[]>();
+  data?.forEach((pt: any) => {
+    const existing = tagsMap.get(pt.product_id) || [];
+    existing.push(pt.tag_slug);
+    tagsMap.set(pt.product_id, existing);
+  });
+
+  return tagsMap;
+}
+
+/**
+ * Helper para adicionar tags aos produtos
+ */
+async function addTagsToProducts(products: any[]): Promise<ProductWithTags[]> {
+  if (products.length === 0) return [];
+
+  const productIds = products.map(p => p.id);
+  const tagsMap = await fetchProductTags(productIds);
+
+  return products.map(product => ({
+    ...product,
+    tags: tagsMap.get(product.id) || [],
+  }));
+}
 
 /**
  * Serviço para gerenciar operações relacionadas a produtos
@@ -10,9 +52,22 @@ export class ProductService {
    */
   static async getAll(): Promise<Product[]> {
     try {
-      // Simula delay de API
-      await new Promise(resolve => setTimeout(resolve, 100));
-      return productsData as Product[];
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error('Erro ao carregar produtos do banco de dados');
+      }
+
+      if (!data || data.length === 0) {
+        return [];
+      }
+
+      const productsWithTags = await addTagsToProducts(data);
+      return adaptSupabaseProducts(productsWithTags);
     } catch (error) {
       console.error('Error fetching products:', error);
       throw new Error('Erro ao carregar produtos');
@@ -24,8 +79,33 @@ export class ProductService {
    */
   static async getBySlug(slug: string): Promise<Product | undefined> {
     try {
-      const products = await this.getAll();
-      return products.find(p => p.slug === slug);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // Not found
+          return undefined;
+        }
+        console.error('Supabase error:', error);
+        throw new Error('Erro ao carregar produto');
+      }
+
+      if (!data) {
+        return undefined;
+      }
+
+      // Buscar tags do produto
+      const tagsMap = await fetchProductTags([(data as any).id]);
+      const productWithTags: ProductWithTags = {
+        ...(data as any),
+        tags: tagsMap.get((data as any).id) || [],
+      };
+
+      return adaptSupabaseProduct(productWithTags);
     } catch (error) {
       console.error('Error fetching product by slug:', error);
       throw new Error('Erro ao carregar produto');
@@ -37,8 +117,33 @@ export class ProductService {
    */
   static async getById(id: string): Promise<Product | undefined> {
     try {
-      const products = await this.getAll();
-      return products.find(p => p.id === id);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // Not found
+          return undefined;
+        }
+        console.error('Supabase error:', error);
+        throw new Error('Erro ao carregar produto');
+      }
+
+      if (!data) {
+        return undefined;
+      }
+
+      // Buscar tags do produto
+      const tagsMap = await fetchProductTags([(data as any).id]);
+      const productWithTags: ProductWithTags = {
+        ...(data as any),
+        tags: tagsMap.get((data as any).id) || [],
+      };
+
+      return adaptSupabaseProduct(productWithTags);
     } catch (error) {
       console.error('Error fetching product by id:', error);
       throw new Error('Erro ao carregar produto');
@@ -50,13 +155,25 @@ export class ProductService {
    */
   static async getByCategory(category: ProductCategory): Promise<Product[]> {
     try {
-      const products = await this.getAll();
+      let query = supabase
+        .from('products')
+        .select('*')
+        .eq('available', true)
+        .order('created_at', { ascending: false });
 
-      if (category === 'todos') {
-        return products.filter(p => p.available);
+      if (category !== 'todos') {
+        query = query.eq('category_slug', category);
       }
 
-      return products.filter(p => p.category === category && p.available);
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error('Erro ao filtrar produtos');
+      }
+
+      const productsWithTags = await addTagsToProducts(data || []);
+      return adaptSupabaseProducts(productsWithTags);
     } catch (error) {
       console.error('Error filtering products by category:', error);
       throw new Error('Erro ao filtrar produtos');
@@ -72,16 +189,20 @@ export class ProductService {
         return this.getAll();
       }
 
-      const products = await this.getAll();
-      const lowerQuery = query.toLowerCase();
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('available', true)
+        .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+        .order('created_at', { ascending: false });
 
-      return products.filter(p =>
-        p.available && (
-          p.name.toLowerCase().includes(lowerQuery) ||
-          p.description.toLowerCase().includes(lowerQuery) ||
-          p.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
-        )
-      );
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error('Erro ao buscar produtos');
+      }
+
+      const productsWithTags = await addTagsToProducts(data || []);
+      return adaptSupabaseProducts(productsWithTags);
     } catch (error) {
       console.error('Error searching products:', error);
       throw new Error('Erro ao buscar produtos');
@@ -93,18 +214,29 @@ export class ProductService {
    */
   static async filter(category: ProductCategory, query: string): Promise<Product[]> {
     try {
-      const products = await this.getAll();
-      const lowerQuery = query.toLowerCase();
+      let supabaseQuery = supabase
+        .from('products')
+        .select('*')
+        .eq('available', true)
+        .order('created_at', { ascending: false });
 
-      return products.filter(p => {
-        const matchesCategory = category === 'todos' || p.category === category;
-        const matchesSearch = !query.trim() ||
-          p.name.toLowerCase().includes(lowerQuery) ||
-          p.description.toLowerCase().includes(lowerQuery) ||
-          p.tags.some(tag => tag.toLowerCase().includes(lowerQuery));
+      if (category !== 'todos') {
+        supabaseQuery = supabaseQuery.eq('category_slug', category);
+      }
 
-        return p.available && matchesCategory && matchesSearch;
-      });
+      if (query.trim()) {
+        supabaseQuery = supabaseQuery.or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+      }
+
+      const { data, error } = await supabaseQuery;
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error('Erro ao filtrar produtos');
+      }
+
+      const productsWithTags = await addTagsToProducts(data || []);
+      return adaptSupabaseProducts(productsWithTags);
     } catch (error) {
       console.error('Error filtering products:', error);
       throw new Error('Erro ao filtrar produtos');
@@ -116,8 +248,18 @@ export class ProductService {
    */
   static async getCategories(): Promise<string[]> {
     try {
-      const products = await this.getAll();
-      const categories = new Set(products.map(p => p.category));
+      const { data, error } = await supabase
+        .from('products')
+        .select('category_slug');
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error('Erro ao carregar categorias');
+      }
+
+      const categories = new Set(
+        (data as { category_slug: string }[])?.map(p => p.category_slug) || []
+      );
       return Array.from(categories);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -133,15 +275,21 @@ export class ProductService {
       const product = await this.getById(productId);
       if (!product) return [];
 
-      const products = await this.getAll();
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category_slug', product.category)
+        .eq('available', true)
+        .neq('id', productId)
+        .limit(limit);
 
-      return products
-        .filter(p =>
-          p.id !== productId &&
-          p.category === product.category &&
-          p.available
-        )
-        .slice(0, limit);
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error('Erro ao carregar produtos relacionados');
+      }
+
+      const productsWithTags = await addTagsToProducts(data || []);
+      return adaptSupabaseProducts(productsWithTags);
     } catch (error) {
       console.error('Error fetching related products:', error);
       throw new Error('Erro ao carregar produtos relacionados');
